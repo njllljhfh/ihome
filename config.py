@@ -1,14 +1,13 @@
 # -*- coding:utf-8 -*-
 
 class Config(object):
-    DEBUG = True
-    TESTING = False
-    DATABASE_URI = 'sqlite://memory:'
+    SQLALCHEMY_DATABASE_URI = 'mysql://root:mysql@127.0.0.1/ihome'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class ProductionConfig(Config):
-    DATABASE_URI = 'mysql://user@localhost/foo'
+    DEBUG = False
 
 
 class DevelopmentConfig(Config):
-    DEBUT = True
+    DEBUG = True

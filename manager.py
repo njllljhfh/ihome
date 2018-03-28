@@ -1,27 +1,18 @@
 # -*- coding:utf-8 -*-
-from flask import Flask
+# manger文件主要管理文件启动: config配置/app创建/路由实现都不需要关心
 from flask_migrate import Migrate, MigrateCommand
-from flask_sqlalchemy import SQLAlchemy
 from flask_script import Manager
+from ihome import create_app
+from config import DevelopmentConfig, ProductionConfig
 
-app = Flask(__name__)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:mysql@127.0.0.1/ihome'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
+# 程序的启动是调试模式,还是发布模式, 我们也希望由manager文件来管理
+app, db = create_app(DevelopmentConfig)
 
 manager = Manager(app)
 
 Migrate(app, db)
 
 manager.add_command('db', MigrateCommand)
-
-
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
-
 
 if __name__ == '__main__':
     manager.run()
