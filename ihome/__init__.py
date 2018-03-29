@@ -7,6 +7,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from flask_session import Session
+from utils.common import RegexConverter
 
 # 所有的Flask扩展都可以延迟加载. 先在函数外部定义对象, 方便别的文件导入, 延迟传入app来加载相关配置
 # 一开始不传入app
@@ -43,6 +44,9 @@ def create_app(config_object):
     # 配置文件
     app.config.from_object(config_object)
 
+    # 添加正则路由
+    app.url_map.converters['re'] = RegexConverter
+
     # 延迟加载db
     # db中填入app，核心目的是为了获取 config信息
     db.init_app(app)
@@ -53,8 +57,8 @@ def create_app(config_object):
     # 创建redis
     global redis_store
     redis_store = redis.StrictRedis(port=config_object.REDIS_PORT, host=config_object.REDIS_HOST)
-    print config_object.REDIS_HOST
-    print config_object.REDIS_PORT
+    # print config_object.REDIS_HOST
+    # print config_object.REDIS_PORT
 
     # 创建Flask-Session. 将保存在浏览器的cookie中的session信息,同步到你要设置的地方
     Session(app)
@@ -66,5 +70,9 @@ def create_app(config_object):
     # 注册蓝图，注册蓝图时，也可以填入 url前缀
     from ihome.api_1_0 import api
     app.register_blueprint(api, url_prefix='/api/v1_0')
+
+    # 导入并注册蓝图
+    import web_html
+    app.register_blueprint(web_html.html)
 
     return app, db

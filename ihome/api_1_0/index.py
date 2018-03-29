@@ -3,6 +3,7 @@ import logging
 from flask import session
 from . import api  # api在init中
 from ihome import db
+from ihome import models
 
 
 @api.route('/')

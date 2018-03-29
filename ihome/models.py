@@ -43,7 +43,7 @@ class Area(BaseModel, db.Model):
 # 房屋设施表，建立房屋与设施的多对多关系
 # 如果是多对多, 直接操作底层的表
 house_facility = db.Table(
-    "ih_house_facility",
+    "ih_house_facility",  # 表名
     db.Column("house_id", db.Integer, db.ForeignKey("ih_house_info.id"), primary_key=True),  # 房屋编号
     db.Column("facility_id", db.Integer, db.ForeignKey("ih_facility_info.id"), primary_key=True)  # 设施编号
 )
