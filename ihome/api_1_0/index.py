@@ -16,3 +16,4 @@ def hello_world():
 @api.route('/demo', methods=['GET', 'POST'])
 def demo():
     return 'demo'
+

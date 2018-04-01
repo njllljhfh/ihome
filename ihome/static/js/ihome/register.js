@@ -21,7 +21,7 @@ function generateUUID() {
 
 function generateImageCode() {
     // 1. 生成UUID
-     imageCodeId = generateUUID()
+    imageCodeId = generateUUID()
     // 2. 给image code的img的src属性, 拼接URL即可
     url = "/api/v1_0/image_codes/" + imageCodeId
     $(".image-code>img").attr("src", url)
@@ -43,33 +43,44 @@ function sendSMSCode() {
         $(".phonecode-a").attr("onclick", "sendSMSCode();");
         return;
     }
-    $.get("/api/smscode", {mobile:mobile, code:imageCode, codeId:imageCodeId}, 
-        function(data){
-            if (0 != data.errno) {
-                $("#image-code-err span").html(data.errmsg); 
-                $("#image-code-err").show();
-                if (2 == data.errno || 3 == data.errno) {
-                    generateImageCode();
+    // 使用ajax方式调用后端接口，发送短信
+    var req_data = {
+        image_code_id: imageCodeId,
+        image_code: imageCode
+    };
+    $.get("/api/v1_0/sms_codes/" + mobile, req_data, function (resp) {
+        // 根据返回的返回数据，进行相应的处理
+        if (resp.errno == 4004 || resp.errno == 4002) {
+            // 图片验证码的错误
+            $("#image-code-err span").html(resp.errmsg);
+            $("#image-code-err").show();
+            //恢复按钮点击
+            $(".phonecode-a").attr("onclick", "sendSMSCode();");
+        } else if ( resp.errno == 0 ) {
+            // 发送短信成功
+            var $time = $(".phonecode-a");
+            var duration = 60;
+            // 设置定时器
+            var intervalid = setInterval(function(){
+                $time.html(duration + "秒");
+                if(duration === 1){
+                    // 清除定时器
+                    clearInterval(intervalid);
+                    $time.html('获取验证码');
+                    $(".phonecode-a").attr("onclick", "sendSMSCode();");
                 }
-                $(".phonecode-a").attr("onclick", "sendSMSCode();");
-            }   
-            else {
-                var $time = $(".phonecode-a");
-                var duration = 60;
-                var intervalid = setInterval(function(){
-                    $time.html(duration + "秒"); 
-                    if(duration === 1){
-                        clearInterval(intervalid);
-                        $time.html('获取验证码'); 
-                        $(".phonecode-a").attr("onclick", "sendSMSCode();");
-                    }
-                    duration = duration - 1;
-                }, 1000, 60); 
-            }
-    }, 'json'); 
+                duration = duration - 1;
+            }, 1000, 60);
+        } else {
+            //理论上应该对各个错误进行针对性处理. 我们这里只是简单的判断了两种错误, 其他错误就直接填出alert提示
+            alert(resp.errmsg);
+            $(".phonecode-a").attr("onclick", "sendSMSCode();");
+        }
+    })
 }
 
 $(document).ready(function() {
+    // 一进入界面就会发出GET请求来获取图像验证码
     generateImageCode();
     $("#mobile").focus(function(){
         $("#mobile-err").hide();
