@@ -24,5 +24,30 @@ $(document).ready(function() {
             $("#password-err").show();
             return;
         }
+        //定义数据-->JS对象
+        var data = {
+            mobile: mobile,
+            password: passwd
+        };
+        data_json = JSON.stringify(data);
+        $.ajax({
+            url: "/api/v1_0/sessions", //请求路径URL
+            type: "post", //请求方式
+            data: data_json, //要发送的数据
+            contentType: "application/json", //指明给后端发送的是JSON数据
+            dataType: "json", //指明后端给前端的是JSON
+            headers:{
+                "X-CSRFToken": getCookie("csrf_token")
+            },
+            success: function (resp) {
+                if (resp.errno == 0) {
+                    //请求成功, 跳转页面
+                    location.href = '/';
+                } else {
+                    //其他错误, 就弹出提示
+                    alert(resp.errmsg)
+                }
+            }
+        });
     });
 })

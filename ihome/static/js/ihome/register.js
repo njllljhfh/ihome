@@ -58,7 +58,7 @@ function sendSMSCode() {
             $(".phonecode-a").attr("onclick", "sendSMSCode();");
         } else if ( resp.errno == 0 ) {
             // 发送短信成功
-            var $time = $(".phonecode-a");
+            var $time = $(".phonecode-a");dsfsdfdf
             var duration = 60;
             // 设置定时器
             var intervalid = setInterval(function(){
@@ -99,6 +99,9 @@ $(document).ready(function() {
         $("#password2-err").hide();
     });
     $(".form-register").submit(function(e){
+        //表单默认是以表单形式发送 key=value
+        //而我们需要发送的是JSON数据 {"key": "value"}
+        //阻止默认的表单发送
         e.preventDefault();
         mobile = $("#mobile").val();
         phoneCode = $("#phonecode").val();
@@ -124,5 +127,44 @@ $(document).ready(function() {
             $("#password2-err").show();
             return;
         }
+
+        //定义数据-->JS对象
+        var data = {
+            mobile: mobile,
+            password: passwd2,
+            sms_code: phoneCode
+        };
+
+        //需要转换成JSON对象
+        //X-CSRFToken-->固定的写法. 将来对比的时候, 就会从这个Key中取值
+        //getCookie: 自己写的从cookie获取cstf_token的方法
+        data_json = JSON.stringify(data);
+
+        // $.post("/api/v1_0/users", data_json, function (resp) {
+        //     if (resp.errno == 0) {
+        //     //     请求成功, 跳转首页
+        //         location.href = "/";
+        //     }
+        // });
+
+        $.ajax({
+            url: "/api/v1_0/users", //请求路径URL
+            type: "post", //请求方式
+            data: data_json, //要发送的数据
+            contentType: "application/json", //指明给后端发送的是JSON数据
+            dataType: "json", //指明后端给前端的是JSON
+            headers:{
+                "X-CSRFToken": getCookie("csrf_token")
+            },
+            success: function (resp) {
+                if (resp.errno == 0) {
+                    //请求成功, 跳转页面
+                    location.href = '/';
+                } else {
+                    //其他错误, 就弹出提示
+                    alert(resp.errmsg)
+                }
+            }
+        });
     });
 })

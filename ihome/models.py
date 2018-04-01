@@ -2,6 +2,7 @@
 
 from datetime import datetime
 from ihome import db
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class BaseModel(object):
@@ -27,6 +28,22 @@ class User(BaseModel, db.Model):
     # 在一的一方, 添加relationship, 同时添加反向引用
     houses = db.relationship("House", backref="user")  # 用户发布的房屋
     orders = db.relationship("Order", backref="user")  # 用户下的订单
+
+    # 提升函数为属性
+    @property
+    def password(self):
+        """关于密码不需要别人获取"""
+        raise AttributeError('不支持读取操作')
+
+    @password.setter
+    def password(self, value):
+        # 属性的setter方法, 需要传入用户的密码(value)
+        self.password_hash = generate_password_hash(value)
+
+    # 检查密码的函数
+    def check_password_hash(self, value):
+        # 需要传入之前的加密项, 及现在的密码(返回布尔值)
+        return check_password_hash(self.password_hash, value)
 
 
 class Area(BaseModel, db.Model):

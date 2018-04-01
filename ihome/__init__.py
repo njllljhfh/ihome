@@ -52,7 +52,7 @@ def create_app(config_object):
     db.init_app(app)
 
     # csrf保护, 针对post/put/delete等会修改数据的请求方式, 需要开启保护
-    CSRFProtect(app)
+    # CSRFProtect(app)
 
     # 创建redis
     global redis_store
