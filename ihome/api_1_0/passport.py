@@ -10,6 +10,8 @@ errmsg: 最好用于用户的显示. 方便前后端开发, 他们只需要做�
 
 import re
 import logging
+
+from ihome.utils.common import login_required
 from . import api
 from flask import request, jsonify, current_app, session
 from ihome.utils.response_code import RET
@@ -226,8 +228,8 @@ def check_login():
 # @login_required
 def logout():
     """登出"""
-    # 清除session数据, csrf_token需要保留.
-    # csrf_token = session['csrf_token']
+    # 清除session数据, csrf_token需要保留,否则session中缺少用户的csrf_token,用户无法正常登录.
+    csrf_token = session['csrf_token']
     session.clear()
-    # session['csrf_token'] = csrf_token
+    session['csrf_token'] = csrf_token
     return jsonify(errno=RET.OK, errmsg="OK")
