@@ -206,3 +206,28 @@ def login():
 
     # 四. 返回数据
     return jsonify(errno=RET.OK, errmsg='登录成功')
+
+
+# 检查登录状态
+@api.route("/sessions", methods=["GET"])
+def check_login():
+    """检查登陆状态"""
+    # 尝试从session中获取用户的名字
+    name = session.get("user_name")
+    # 如果session中数据name名字存在，则表示用户已登录，否则未登录
+    if name is not None:
+        return jsonify(errno=RET.OK, errmsg="true", data={"name": name})
+    else:
+        return jsonify(errno=RET.SESSIONERR, errmsg="false")
+
+
+# 退出
+@api.route("/sessions", methods=["DELETE"])
+# @login_required
+def logout():
+    """登出"""
+    # 清除session数据, csrf_token需要保留.
+    # csrf_token = session['csrf_token']
+    session.clear()
+    # session['csrf_token'] = csrf_token
+    return jsonify(errno=RET.OK, errmsg="OK")

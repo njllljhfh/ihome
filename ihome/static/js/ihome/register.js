@@ -158,7 +158,7 @@ $(document).ready(function() {
             },
             success: function (resp) {
                 if (resp.errno == 0) {
-                    //请求成功, 跳转页面
+                    //请求成功, 跳转页面(默认不刷新网页页面)
                     location.href = '/';
                 } else {
                     //其他错误, 就弹出提示

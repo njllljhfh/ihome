@@ -1,11 +1,11 @@
 //模态框居中的控制
-function centerModals(){
-    $('.modal').each(function(i){   //遍历每一个模态框
-        var $clone = $(this).clone().css('display', 'block').appendTo('body');    
+function centerModals() {
+    $('.modal').each(function (i) {   //遍历每一个模态框
+        var $clone = $(this).clone().css('display', 'block').appendTo('body');
         var top = Math.round(($clone.height() - $clone.find('.modal-content').height()) / 2);
         top = top > 0 ? top : 0;
         $clone.remove();
-        $(this).find('.modal-content').css("margin-top", top-30);  //修正原先已经有的30个像素
+        $(this).find('.modal-content').css("margin-top", top - 30);  //修正原先已经有的30个像素
     });
 }
 
@@ -24,7 +24,7 @@ function setStartDate() {
             startDate: startDate,
             format: "yyyy-mm-dd"
         });
-        $("#end-date").on("changeDate", function() {
+        $("#end-date").on("changeDate", function () {
             $("#end-date-input").val(
                 $(this).datepicker("getFormattedDate")
             );
@@ -48,7 +48,7 @@ function goToSearchPage(th) {
     url += ("aid=" + $(th).attr("area-id"));
     url += "&";
     var areaName = $(th).attr("area-name");
-    if (undefined == areaName) areaName="";
+    if (undefined == areaName) areaName = "";
     url += ("aname=" + areaName);
     url += "&";
     url += ("sd=" + $(th).attr("start-date"));
@@ -57,16 +57,26 @@ function goToSearchPage(th) {
     location.href = url;
 }
 
-$(document).ready(function(){
-    $(".top-bar>.register-login").show();
-    var mySwiper = new Swiper ('.swiper-container', {
+$(document).ready(function () {
+    //检查用户的登录状态
+    $.get("/api/v1_0/sessions", function (resp) {
+        if (resp.errno == 0) {
+            // 表示用户是登录
+            $(".top-bar>.user-info>.user-name").html(resp.data.name);
+            $(".top-bar>.user-info").show();
+        } else {
+            // 表示用户未登录
+            $(".top-bar>.register-login").show();
+        }
+    }, "json");
+    var mySwiper = new Swiper('.swiper-container', {
         loop: true,
         autoplay: 2000,
         autoplayDisableOnInteraction: false,
         pagination: '.swiper-pagination',
         paginationClickable: true
-    }); 
-    $(".area-list a").click(function(e){
+    });
+    $(".area-list a").click(function (e) {
         $("#area-btn").html($(this).html());
         $(".search-btn").attr("area-id", $(this).attr("area-id"));
         $(".search-btn").attr("area-name", $(this).html());
@@ -80,7 +90,7 @@ $(document).ready(function(){
         startDate: "today",
         format: "yyyy-mm-dd"
     });
-    $("#start-date").on("changeDate", function() {
+    $("#start-date").on("changeDate", function () {
         var date = $(this).datepicker("getFormattedDate");
         $("#start-date-input").val(date);
     });
