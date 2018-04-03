@@ -22,5 +22,20 @@ function logout() {
     });
 }
 
+// 显示 用户信息
 $(document).ready(function () {
+    $.get("/api/v1_0/users", function (resp) {
+        // 用户未登录
+        if (resp.errno == 4101) {
+            location.href = "/login.html";
+        }
+        // 查询到了用户的信息
+        else if (resp.errno == 0) {
+            $("#user-name").html(resp.data.name);
+            $("#user-mobile").html(resp.data.mobile);
+            if (resp.data.avatar) {
+                $("#user-avatar").attr("src", resp.data.avatar);
+            }
+        }
+    }, "json");
 })
