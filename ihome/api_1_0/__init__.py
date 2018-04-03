@@ -6,4 +6,4 @@ from flask import Blueprint
 api = Blueprint('api', __name__)
 # api = Blueprint('api', __name__,url_prefix='/api/v1_0')
 
-import index, verify_code, passport
+import index, verify_code, passport,profile
