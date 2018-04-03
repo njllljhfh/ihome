@@ -48,7 +48,7 @@ class User(BaseModel, db.Model):
         return check_password_hash(self.password_hash, value)
 
     def to_dict(self):
-        """将对象转换为字典数据"""
+        """将对象转换为字典数据,用于获取用户个人信息"""
         user_dict = {
             "user_id": self.id,
             "name": self.name,
@@ -57,6 +57,15 @@ class User(BaseModel, db.Model):
             "create_time": self.create_time.strftime("%Y-%m-%d %H:%M:%S")
         }
         return user_dict
+
+    def auth_to_dict(self):
+        """将实名信息转换为字典数据"""
+        auth_dict = {
+            "user_id": self.id,
+            "real_name": self.real_name,
+            "id_card": self.id_card
+        }
+        return auth_dict
 
 
 class Area(BaseModel, db.Model):

@@ -2,7 +2,7 @@
 
 IMAGE_CODE_REDIS_EXPIRE = 180  # 图片验证码redis保存的有效期，单位秒
 
-IMAGE_CODE_YTX_EXPIRE = '5'  # 图片验证码redis保存的有效期，单位秒
+IMAGE_CODE_YTX_EXPIRE = '5'  # 图片验证码redis保存的有效期，单位分钟
 
 SMS_CODE_REDIS_EXPIRE = 300  # 短信验证码redis保存的有效期，单位秒
 
