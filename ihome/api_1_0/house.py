@@ -67,6 +67,7 @@ def house_areas():
     # return '{"errno":0,"errmsg":"查询成功","data":%s}' % area_json, 200, {'Content-Type': 'application/json'}
     return '{"errno":0,"errmsg":"查询成功","data":%s}' % area_json
 
+
 # 设置房屋信息
 @api.route("/houses/info", methods=["POST"])
 @login_required
@@ -185,7 +186,7 @@ def save_house_image():
     if not all([house_id, image_file]):
         return jsonify(errno=RET.PARAMERR, errmsg="参数不完整")
 
-    # 1. 还需要对houise_id做判断
+    # 1. 还需要对house_id做判断
     try:
         house = House.query.get(house_id)
     except Exception as e:

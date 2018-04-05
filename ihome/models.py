@@ -122,6 +122,7 @@ class House(BaseModel, db.Model):
     area_id = db.Column(db.Integer, db.ForeignKey("ih_area_info.id"), nullable=False)  # 归属地的区域编号
 
     # 如果是多对多, 只需要在一方增加relationship, 同时需要告诉他第三张表的名字
+    # 一下三个 属性，不是 数据库中 ih_house_info表 中的字段
     facilities = db.relationship("Facility", secondary=house_facility)  # 房屋的设施
     images = db.relationship("HouseImage")  # 房屋的图片
     orders = db.relationship("Order", backref="house")  # 房屋的订单
@@ -140,6 +141,52 @@ class House(BaseModel, db.Model):
             "user_avatar": constants.QINIU_URL_DOMAIN + self.user.avatar_url if self.user.avatar_url else "",
             "ctime": self.create_time.strftime("%Y-%m-%d")
         }
+        return house_dict
+
+    def to_full_dict(self):
+        """将详细信息转换为字典数据"""
+        house_dict = {
+            "hid": self.id,
+            "user_id": self.user_id,
+            "user_name": self.user.name,
+            "user_avatar": constants.QINIU_URL_DOMAIN + self.user.avatar_url if self.user.avatar_url else "",
+            "title": self.title,
+            "price": self.price,
+            "address": self.address,
+            "room_count": self.room_count,
+            "acreage": self.acreage,
+            "unit": self.unit,
+            "capacity": self.capacity,
+            "beds": self.beds,
+            "deposit": self.deposit,
+            "min_days": self.min_days,
+            "max_days": self.max_days,
+        }
+
+        # 房屋图片
+        img_urls = []
+        for image in self.images:
+            img_urls.append(constants.QINIU_URL_DOMAIN + image.url)
+        house_dict["img_urls"] = img_urls
+
+        # 房屋设施
+        facilities = []
+        for facility in self.facilities:
+            facilities.append(facility.id)
+        house_dict["facilities"] = facilities
+
+        # 评论信息
+        comments = []
+        orders = Order.query.filter(Order.house_id == self.id, Order.status == "COMPLETE", Order.comment != None) \
+            .order_by(Order.update_time.desc()).limit(constants.HOUSE_DETAIL_COMMENT_DISPLAY_COUNTS)
+        for order in orders:
+            comment = {
+                "comment": order.comment,  # 评论的内容
+                "user_name": order.user.name if order.user.name != order.user.mobile else "匿名用户",  # 发表评论的用户
+                "ctime": order.update_time.strftime("%Y-%m-%d %H:%M:%S")  # 评价的时间
+            }
+            comments.append(comment)
+        house_dict["comments"] = comments  # [{},{},{}]
         return house_dict
 
 
