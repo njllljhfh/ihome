@@ -24,11 +24,16 @@ $(document).ready(function() {
             $("#password-err").show();
             return;
         }
+
         //定义数据-->JS对象
         var data = {
             mobile: mobile,
             password: passwd
         };
+
+        //需要转换成JSON对象
+        //X-CSRFToken-->固定的写法. 将来对比的时候, 就会从这个Key中取值
+        //getCookie: 自己写的从cookie获取cstf_token的方法
         data_json = JSON.stringify(data);
         $.ajax({
             url: "/api/v1_0/sessions", //请求路径URL
@@ -36,13 +41,13 @@ $(document).ready(function() {
             data: data_json, //要发送的数据
             contentType: "application/json", //指明给后端发送的是JSON数据
             dataType: "json", //指明后端给前端的是JSON
-            headers:{
-                "X-CSRFToken": getCookie("csrf_token")
+            headers: {
+              "X-CSRFToken": getCookie('csrf_token')
             },
             success: function (resp) {
                 if (resp.errno == 0) {
                     //请求成功, 跳转页面
-                    location.href = '/';
+                    location.href = '/'
                 } else {
                     //其他错误, 就弹出提示
                     alert(resp.errmsg)

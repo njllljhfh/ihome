@@ -6,7 +6,7 @@ from flask import Blueprint
 api = Blueprint('api', __name__)
 # api = Blueprint('api', __name__,url_prefix='/api/v1_0')
 
-import index, verify_code, passport, profile, house
+import index, verify_code, passport, profile, house, order
 
 
 # 增加请求钩子函数，统一处理数据，返回为JSON格式
